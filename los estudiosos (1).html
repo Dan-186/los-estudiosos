@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Los Estudiosos</title>
+
+<style>
+/* estilos generales */
+body{
+  margin:0;
+  font-family: Arial;
+  background:#0f172a;
+  color:#e2e8f0;
+}
+
+/* login */
+#login{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.box{
+  background:#1e293b;
+  padding:25px;
+  border-radius:10px;
+  width:300px;
+}
+
+input, select, textarea{
+  width:100%;
+  margin:5px 0;
+  padding:8px;
+  border:none;
+  border-radius:5px;
+  background:#334155;
+  color:white;
+}
+
+button{
+  padding:8px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.primary{
+  background:#facc15;
+  color:black;
+  width:100%;
+}
+
+/* app */
+#app{
+  display:none;
+}
+
+.sidebar{
+  width:220px;
+  background:#020617;
+  height:100vh;
+  position:fixed;
+  padding:15px;
+}
+
+.sidebar button{
+  width:100%;
+  background:none;
+  color:white;
+  text-align:left;
+  margin:5px 0;
+}
+
+.content{
+  margin-left:240px;
+  padding:20px;
+}
+
+.hidden{
+  display:none;
+}
+
+/* tarjetas */
+.kpi{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.card{
+  background:#1e293b;
+  padding:15px;
+  border-radius:10px;
+}
+
+/* tareas */
+.task{
+  background:#1e293b;
+  padding:10px;
+  border-radius:8px;
+  margin-top:10px;
+}
+
+.badge{
+  padding:3px 6px;
+  border-radius:5px;
+  font-size:12px;
+}
+
+.alta{background:red;}
+.media{background:orange;}
+.baja{background:green;}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="box">
+
+    <h2>Los Estudiosos</h2>
+
+    <div style="display:flex; gap:5px;">
+      <button onclick="cambiar('loginForm')" class="primary">Iniciar</button>
+      <button onclick="cambiar('registerForm')">Registro</button>
+    </div>
+
+    <!-- login -->
+    <div id="loginForm">
+      <input id="correo" placeholder="Correo">
+      <input id="pass" type="password" placeholder="Contraseña">
+      <button class="primary" onclick="entrar()">Entrar</button>
+    </div>
+
+    <!-- registro -->
+    <div id="registerForm" class="hidden">
+      <input placeholder="Nombre">
+      <input placeholder="Apellido">
+      <input placeholder="Correo">
+      <input placeholder="Universidad">
+      <input type="password" placeholder="Contraseña">
+      <button class="primary" onclick="registrar()">Crear cuenta</button>
+    </div>
+
+  </div>
+</div>
+
+<div id="app">
+
+<div class="sidebar">
+  <button onclick="ir('inicio')">Inicio</button>
+  <button onclick="ir('tareas')">Tareas</button>
+  <button onclick="ir('materias')">Materias</button>
+  <button onclick="ir('recursos')">Recursos</button>
+  <button onclick="salir()">Cerrar sesión</button>
+</div>
+
+<div class="content">
+
+ <title>Los Estudiosos</title>
+
+<div id="inicio">
+  <h2>Dashboard</h2>
+
+  <div class="kpi">
+    <div class="card">Total <h2 id="total"></h2></div>
+    <div class="card">Pendientes <h2 id="pend"></h2></div>
+    <div class="card">Progreso <h2 id="prog"></h2></div>
+    <div class="card">Completadas <h2 id="comp"></h2></div>
+  </div>
+</div>
+<title>Los Estudiosos</title>
+<div id="tareas" class="hidden">
+  <h2>Tareas</h2>
+
+  <button class="primary" onclick="toggle('formT')">+ Nueva tarea</button>
+
+  <div id="formT" class="hidden">
+    <input id="tTitulo" placeholder="Título">
+    <textarea id="tDesc" placeholder="Descripción"></textarea>
+
+    <select id="tEstado">
+      <option>Pendiente</option>
+      <option>En progreso</option>
+      <option>Completada</option>
+    </select>
+
+    <select id="tPrioridad">
+      <option value="alta">Alta</option>
+      <option value="media">Media</option>
+      <option value="baja">Baja</option>
+    </select>
+
+    <button onclick="guardarT()">Guardar</button>
+  </div>
+
+  <div id="listaT"></div>
+</div>
+
+<title>Los Estudiosos</title>
+<div id="materias" class="hidden">
+  <h2>Materias</h2>
+
+  <button class="primary" onclick="toggle('formM')">+ Nueva materia</button>
+
+  <div id="formM" class="hidden">
+    <input id="mNom" placeholder="Nombre">
+    <input id="mProf" placeholder="Profesor">
+    <input id="mCred" placeholder="Créditos">
+    <button onclick="guardarM()">Guardar</button>
+  </div>
+
+  <ul id="listaM"></ul>
+</div>
+
+<div id="recursos" class="hidden">
+  <h2>Recursos</h2>
+
+  <input id="rLink" placeholder="Link PDF">
+  <button onclick="guardarR()">Agregar</button>
+
+  <ul id="listaR"></ul>
+</div>
+
+</div>
+</div>
+
+<script>
+let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
+let materias = JSON.parse(localStorage.getItem("materias")) || [];
+let recursos = JSON.parse(localStorage.getItem("recursos")) || [];
+
+function cambiar(form){
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("registerForm").classList.add("hidden");
+  document.getElementById(form).classList.remove("hidden");
+}
+
+function entrar(){
+  if(correo.value=="" || pass.value==""){
+    alert("Llena los campos");
+    return;
+  }
+  login.style.display="none";
+  app.style.display="block";
+}
+
+function registrar(){
+  alert("Cuenta creada (demo)");
+  cambiar("loginForm");
+}
+
+function salir(){
+  location.reload();
+}
+
+/* navegación */
+function ir(id){
+  document.querySelectorAll(".content > div").forEach(d=>d.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
+
+/* mostrar formularios */
+function toggle(id){
+  document.getElementById(id).classList.toggle("hidden");
+}
+
+/* tareas */
+function guardarT(){
+  let t={
+    titulo:tTitulo.value,
+    desc:tDesc.value,
+    estado:tEstado.value,
+    prioridad:tPrioridad.value
+  };
+  tareas.push(t);
+  guardarDatos();
+  pintarT();
+}
+
+function pintarT(){
+  listaT.innerHTML="";
+  let p=0, pr=0, c=0;
+
+  tareas.forEach((t,i)=>{
+    if(t.estado=="Pendiente") p++;
+    if(t.estado=="En progreso") pr++;
+    if(t.estado=="Completada") c++;
+
+    let div=document.createElement("div");
+    div.className="task";
+
+    div.innerHTML=`
+      <b>${t.titulo}</b><br>
+      ${t.desc}<br>
+      <span class="badge ${t.prioridad}">${t.prioridad}</span>
+      <small>${t.estado}</small>
+      <button onclick="eliminarT(${i})">❌</button>
+    `;
+
+    listaT.appendChild(div);
+  });
+
+  total.innerText=tareas.length;
+  pend.innerText=p;
+  prog.innerText=pr;
+  comp.innerText=c;
+}
+
+function eliminarT(i){
+  tareas.splice(i,1);
+  guardarDatos();
+  pintarT();
+}
+
+/* materias */
+function guardarM(){
+  let m={
+    nombre:mNom.value,
+    prof:mProf.value,
+    cred:mCred.value
+  };
+  materias.push(m);
+  guardarDatos();
+  pintarM();
+}
+
+function pintarM(){
+  listaM.innerHTML="";
+  materias.forEach(m=>{
+    let li=document.createElement("li");
+    li.innerText=`${m.nombre} - ${m.prof}`;
+    listaM.appendChild(li);
+  });
+}
+
+/* recursos */
+function guardarR(){
+  recursos.push(rLink.value);
+  guardarDatos();
+  pintarR();
+}
+
+function pintarR(){
+  listaR.innerHTML="";
+  recursos.forEach(r=>{
+    let li=document.createElement("li");
+    li.innerHTML=`<a href="${r}" target="_blank">${r}</a>`;
+    listaR.appendChild(li);
+  });
+}
+
+/* guardar */
+function guardarDatos(){
+  localStorage.setItem("tareas",JSON.stringify(tareas));
+  localStorage.setItem("materias",JSON.stringify(materias));
+  localStorage.setItem("recursos",JSON.stringify(recursos));
+}
+
+/* iniciar */
+pintarT();
+pintarM();
+pintarR();
+</script>
+
+</body>
+</html>
+```
