@@ -2,10 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Los Estudiosos</title>
+<title>LOS ESTUDIOSOS</title>
 
 <style>
-/* estilos generales */
 body{
   margin:0;
   font-family: Arial;
@@ -13,7 +12,6 @@ body{
   color:#e2e8f0;
 }
 
-/* login */
 #login{
   display:flex;
   justify-content:center;
@@ -50,8 +48,6 @@ button{
   color:black;
   width:100%;
 }
-
-/* app */
 #app{
   display:none;
 }
@@ -80,8 +76,6 @@ button{
 .hidden{
   display:none;
 }
-
-/* tarjetas */
 .kpi{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -93,15 +87,12 @@ button{
   padding:15px;
   border-radius:10px;
 }
-
-/* tareas */
 .task{
   background:#1e293b;
   padding:10px;
   border-radius:8px;
   margin-top:10px;
 }
-
 .badge{
   padding:3px 6px;
   border-radius:5px;
@@ -127,14 +118,11 @@ button{
       <button onclick="cambiar('registerForm')">Registro</button>
     </div>
 
-    <!-- login -->
     <div id="loginForm">
       <input id="correo" placeholder="Correo">
       <input id="pass" type="password" placeholder="Contraseña">
       <button class="primary" onclick="entrar()">Entrar</button>
     </div>
-
-    <!-- registro -->
     <div id="registerForm" class="hidden">
       <input placeholder="Nombre">
       <input placeholder="Apellido">
@@ -336,7 +324,6 @@ function pintarM(){
   });
 }
 
-/* recursos */
 function guardarR(){
   recursos.push(rLink.value);
   guardarDatos();
@@ -351,15 +338,11 @@ function pintarR(){
     listaR.appendChild(li);
   });
 }
-
-/* guardar */
 function guardarDatos(){
   localStorage.setItem("tareas",JSON.stringify(tareas));
   localStorage.setItem("materias",JSON.stringify(materias));
   localStorage.setItem("recursos",JSON.stringify(recursos));
 }
-
-/* iniciar */
 pintarT();
 pintarM();
 pintarR();
@@ -367,4 +350,3 @@ pintarR();
 
 </body>
 </html>
-```
